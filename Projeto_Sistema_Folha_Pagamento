@@ -1,0 +1,142 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Funcionario> listaFuncionarios = new ArrayList<>();
+        int opcao;
+
+        do {
+            System.out.println("\n--- MENU DO SISTEMA ---");
+            System.out.println("1 - Cadastrar Funcionário Padrão");
+            System.out.println("2 - Cadastrar Funcionário Comissionado");
+            System.out.println("3 - Cadastrar Funcionário Produção");
+            System.out.println("4 - Gerar Folha de Pagamento");
+            System.out.println("0 - Sair do Programa");
+            System.out.print("Escolha uma opção: ");
+            
+            opcao = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (opcao) {
+                case 1:
+                    System.out.println("\n[Opção 1 - Cadastro Padrão]");
+                    System.out.print("Digite o nome do funcionário: ");
+                    String nome = scanner.nextLine();
+                    System.out.print("Digite a matrícula do funcionário: ");
+                    int matricula = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Funcionario funcionario = new Funcionario(nome, matricula);
+                    listaFuncionarios.add(funcionario);
+                    System.out.println("=== Funcionário cadastrado com sucesso! ===");
+                    break;
+
+                case 2:
+                    System.out.println("\n[Opção 2 - Cadastro Comissionado]");
+                    System.out.print("Digite o nome do funcionário: ");
+                    String nomeComissionado = scanner.nextLine();
+                    System.out.print("Digite a matrícula do funcionário: ");
+                    int matriculaComissionado = scanner.nextInt();
+                    System.out.print("Digite o valor total de vendas no mês (R$): ");
+                    double vendas = scanner.nextDouble();
+                    System.out.print("Digite o percentual de comissão (%): ");
+                    double comissao = scanner.nextDouble();
+                    scanner.nextLine();
+                    Funcionario fc = new FuncionarioComissionado(nomeComissionado, matriculaComissionado, vendas, comissao);
+                    listaFuncionarios.add(fc);
+                    System.out.println("=== Funcionário Comissionado cadastrado! ===");
+                    break;
+                case 3:
+                    System.out.println("\n[Opção 3 - Cadastro Produção]");
+                    System.out.print("Digite o nome do funcionário: ");
+                    String nomeProducao = scanner.nextLine();
+                    System.out.print("Digite a matrícula do funcionário: ");
+                    int matriculaProducao = scanner.nextInt();
+                    System.out.print("Digite a quantidade de peças produzidas: ");
+                    int qtdPecas = scanner.nextInt();
+                    System.out.print("Digite o valor pago por peça (R$): ");
+                    double valorPeca = scanner.nextDouble();
+                    scanner.nextLine();
+                    Funcionario fp = new FuncionarioProdução(nomeProducao, matriculaProducao, qtdPecas, valorPeca);
+                    listaFuncionarios.add(fp);
+                    System.out.println("=== Funcionário por Produção cadastrado com sucesso! ===");
+                    break;
+                    case 4:
+                    System.out.println("\n[Opção 4 - Gerar Folha de Pagamento]");
+                    if (listaFuncionarios.isEmpty()) {
+                        System.out.println("Nenhum funcionário cadastrado no sistema ainda!");
+                    } else {
+                        System.out.println("======= FOLHA DE PAGAMENTO =======");
+                        for (Funcionario f : listaFuncionarios) {
+                            System.out.println("---------------------------------------");
+                            f.mostrarDados();
+                            double salarioFinal = f.calcularSalarioFinal();
+                            System.out.printf("Salário Final Calculado: R$ %.2f\n", salarioFinal);
+                        }
+                        System.out.println("---------------------------------------");
+                    }
+                    break;
+                case 0:
+                    System.out.println("\nEncerrando o processamento do sistema. Até logo!");
+                    break;
+
+                default:
+                    System.out.println("Opção inválida! Tente novamente.");
+            }
+        } while (opcao != 0);
+    }
+}
+
+class Funcionario {
+    public String nome;
+    public int matricula;
+    public static final double SALARIO_BASE = 2000.00;
+
+    public Funcionario(String n, int m) {
+        this.nome = n;
+        this.matricula = m;
+    }
+
+    public double calcularSalarioFinal() {
+        return SALARIO_BASE;
+    }
+
+    public void mostrarDados() {
+        System.out.println("Nome: " + nome);
+        System.out.println("Matrícula: " + matricula);
+        System.out.println("Salário Fixo: R$ " + SALARIO_BASE);
+    }
+}
+class FuncionarioComissionado extends Funcionario {
+    public double totalVendas;
+    public double percentualComissao;
+
+    public FuncionarioComissionado(String n, int m, double vendas, double comissao) {
+        super(n, m);
+        this.totalVendas = vendas;
+        this.percentualComissao = comissao;
+    }
+
+    @Override
+    public double calcularSalarioFinal() {
+        return SALARIO_BASE + (totalVendas * (percentualComissao / 100));
+    }
+}
+
+class FuncionarioProdução extends Funcionario {
+    public int quantidadeProduzida;
+    public double valorPorPeca;
+
+    public FuncionarioProdução(String n, int m, int qtd, double valorPeca) {
+        super(n, m);
+        this.quantidadeProduzida = qtd;
+        this.valorPorPeca = valorPeca;
+    }
+
+    @Override
+    public double calcularSalarioFinal() {
+        return SALARIO_BASE + (quantidadeProduzida * valorPorPeca);
+    }
+}
